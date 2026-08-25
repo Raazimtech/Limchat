@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#b7ef2a"><meta name="description" content="Limchat — simple private messaging.">
+<link rel="manifest" href="manifest.json"><link rel="icon" href="favicon.svg"><link rel="stylesheet" href="styles.css">
+<title>Limchat</title>
+</head>
+<body>
+<div id="toast" class="toast" role="status"></div>
+<section id="auth" class="auth-screen">
+  <div class="auth-card">
+    <div class="brand"><img src="favicon.svg" alt="Limchat logo"><span>limchat</span></div>
+    <p class="tagline">Private conversations. No noise.</p>
+    <div class="auth-tabs"><button class="tab active" data-auth="login">Log in</button><button class="tab" data-auth="signup">Create account</button></div>
+    <form id="auth-form">
+      <label>Username<input id="username" autocomplete="username" minlength="3" maxlength="24" required placeholder="your_username"></label>
+      <label id="display-wrap" class="hidden">Display name<input id="display-name" maxlength="60" placeholder="Your name"></label>
+      <label>Password<input id="password" type="password" autocomplete="current-password" minlength="6" required placeholder="••••••••"></label>
+      <button class="primary wide" type="submit" id="auth-submit">Log in</button>
+    </form>
+    <p class="auth-note">Username must be unique. Your password is handled by secure authentication.</p>
+  </div>
+</section>
+<section id="app" class="app hidden">
+  <aside class="sidebar">
+    <header class="sidebar-head"><div class="brand small"><img src="favicon.svg" alt=""><span>limchat</span></div><button id="logout" class="icon-btn" title="Log out">↪</button></header>
+    <div class="search"><span>⌕</span><input id="user-search" placeholder="Find people by username" autocomplete="off"></div>
+    <div id="search-results" class="search-results hidden"></div>
+    <div id="chat-list" class="chat-list"></div>
+  </aside>
+  <main class="main">
+    <header class="topbar"><div class="mobile-brand brand small"><img src="favicon.svg" alt=""><span>limchat</span></div><div id="mobile-title" class="mobile-title hidden"></div><button id="mobile-back" class="icon-btn hidden">‹</button><button id="mobile-search" class="icon-btn">⌕</button></header>
+    <div id="view" class="view"></div>
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-view="chats"><span>◼</span><small>Chats</small></button>
+      <button class="nav-item" data-view="files"><span>▤</span><small>Files</small></button>
+      <button class="nav-item compose" id="new-chat"><span>＋</span><small>Send</small></button>
+      <button class="nav-item" data-view="people"><span>♙</span><small>People</small></button>
+      <button class="nav-item" data-view="profile"><span>●</span><small>Profile</small></button>
+    </nav>
+  </main>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="app.js"></script>
+</body></html>
