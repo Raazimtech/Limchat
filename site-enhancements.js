@@ -17,7 +17,7 @@
     if(standalone())return;
     const make=()=>{
       const b=document.createElement('button');
-      b.className='site-install-btn hidden';
+      b.className='site-install-btn';
       b.type='button';
       b.setAttribute('aria-label','Install Limchat app');
       b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11M8 10l4 4 4-4M5 18v2h14v-2"/></svg><span>Install app</span>';
@@ -39,8 +39,7 @@
     const top=document.querySelector('.topbar');
     if(desktop){const b=make();b.id='site-install-desktop';const logout=document.querySelector('#logout');desktop.insertBefore(b,logout)}
     if(top){const b=make();b.id='site-install-mobile';const search=document.querySelector('#mobile-search');top.insertBefore(b,search)}
-    const show=()=>document.querySelectorAll('.site-install-btn').forEach(b=>b.classList.toggle('hidden',!window.__limchatInstallPrompt));
-    window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();window.__limchatInstallPrompt=e;show()});
+    window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();window.__limchatInstallPrompt=e});
     window.addEventListener('appinstalled',()=>{window.__limchatInstallPrompt=null;document.querySelectorAll('.site-install-btn').forEach(b=>b.classList.add('hidden'))});
   }
 
@@ -64,10 +63,7 @@
       }else if(type==='profile'){
         view.innerHTML='<div class="nav-fast-loading"><div class="nav-fast-line"></div><div class="nav-fast-line short"></div></div>';
       }
-      setTimeout(()=>{
-        const native=window.setView;
-        if(typeof native==='function')native(type);
-      },0);
+      setTimeout(()=>{if(typeof window.setView==='function')window.setView(type)},0);
     },true);
   }
 
