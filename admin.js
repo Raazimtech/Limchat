@@ -3,15 +3,19 @@ const SUPABASE_KEY='sb_publishable_PSZnTEo74jObih_6TTpXVQ_tJwzTnXY';
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 let admin=null,users=[],transactions=[],audit=[];
+async function refreshBootstrap(){const {data,error}=await db.rpc('asal_bootstrap_status');const ready=!error&&!data;$('#showBootstrap').classList.toggle('hidden',!ready);if(!ready){$('#bootstrapForm').classList.add('hidden');$('#loginNote').textContent='Admin signup is permanently closed. Sign in with the existing administrator account.'}}
+
 const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number(n)||0);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 function toast(s){const e=$('#toast');e.textContent=s;e.classList.add('show');clearTimeout(e.t);e.t=setTimeout(()=>e.classList.remove('show'),2600)}
 function showLogin(){$('#login').classList.remove('hidden');$('#admin').classList.add('hidden')}
 function showAdmin(){$('#login').classList.add('hidden');$('#admin').classList.remove('hidden')}
 function setView(v){$$('.view').forEach(x=>x.classList.toggle('active',x.id===v));$$('.nav-item').forEach(x=>x.classList.toggle('active',x.dataset.view===v));if(v==='dashboard')loadDashboard();if(v==='users')loadUsers();if(v==='transactions')loadTransactions();if(v==='audit')loadAudit()}
-async function boot(){const {data}=await db.auth.getSession();if(data.session)await checkAdmin(data.session.user);db.auth.onAuthStateChange(async(_,s)=>{if(s)await checkAdmin(s.user);else{admin=null;showLogin()}})}
+async function boot(){await refreshBootstrap();const {data}=await db.auth.getSession();if(data.session)await checkAdmin(data.session.user);db.auth.onAuthStateChange(async(_,s)=>{if(s)await checkAdmin(s.user);else{admin=null;showLogin();await refreshBootstrap()}})}
 async function checkAdmin(u){const {data:p,error}=await db.from('profiles').select('id,full_name,role,active').eq('id',u.id).single();if(error||!p||p.role!=='admin'||!p.active){await db.auth.signOut();toast('This account is not authorized as an Asal Pay administrator.');return}admin=p;$('#adminName').textContent=p.full_name||u.email||'Administrator';showAdmin();await loadDashboard()}
+$('#showBootstrap').onclick=()=>{ $('#bootstrapForm').classList.remove('hidden'); $('#showBootstrap').classList.add('hidden'); $('#loginForm').classList.add('hidden'); $('#loginDescription').textContent='Create the one and only Asal Pay administrator account.' };
 $('#loginForm').onsubmit=async e=>{e.preventDefault();const {error}=await db.auth.signInWithPassword({email:$('#email').value.trim(),password:$('#password').value});if(error)toast(error.message)};
+$('#bootstrapForm').onsubmit=async e=>{e.preventDefault();const name=$('#bootName').value.trim(),phone=$('#bootPhone').value.trim(),email=$('#bootEmail').value.trim(),password=$('#bootPassword').value;if(!/^\\+2526[3-9]\\d{7}$/.test(phone.replace(/\\s/g,''))){toast('Enter a valid Somaliland mobile number.');return}const {data,error}=await db.auth.signUp({email,password});if(error){toast(error.message);return}if(!data.user){toast('Could not create administrator.');return}const {error:be}=await db.rpc('asal_bootstrap_admin',{p_user_id:data.user.id,p_full_name:name,p_phone:phone.replace(/\\s/g,'')});if(be){await db.auth.signOut();toast(be.message);await refreshBootstrap();return}toast('Administrator created.');await checkAdmin(data.user)};
 $('#logout').onclick=()=>db.auth.signOut();
 $$('.nav-item').forEach(b=>b.onclick=()=>setView(b.dataset.view));
 $$('[data-view]').filter(x=>!x.classList.contains('nav-item')).forEach(b=>b.onclick=()=>setView(b.dataset.view));
