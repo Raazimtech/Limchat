@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1f3a">
+<title>Asal Pay Admin</title>
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<div id="toast" class="toast" role="status"></div>
+<section id="login" class="login">
+  <div class="login-card">
+    <div class="mark">A</div>
+    <h1>Asal Pay Admin</h1>
+    <p>Secure control center for wallet operations.</p>
+    <form id="loginForm">
+      <label>Email<input id="email" type="email" autocomplete="username" required placeholder="admin email"></label>
+      <label>Password<input id="password" type="password" autocomplete="current-password" required placeholder="Password"></label>
+      <button class="primary" type="submit">Sign in</button>
+    </form>
+    <small>Admin access is restricted to authorized Asal Pay administrators.</small>
+  </div>
+</section>
+<section id="admin" class="hidden">
+<header class="top"><div class="brand"><div class="mark small">A</div><div><strong>Asal Pay</strong><span>Admin Control Center</span></div></div><div class="top-actions"><span id="adminName"></span><button id="logout" class="icon-btn" aria-label="Log out" title="Log out"><svg viewBox="0 0 24 24"><path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5M15 16l4-4-4-4M19 12H9"/></svg></button></div></header>
+<main>
+<section id="dashboard" class="view active"><div class="heading"><div><h1>Dashboard</h1><p>Monitor wallets, users, and transactions.</p></div><button class="secondary" id="refresh"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0 2 5"/><path d="M20 4v7h-7"/></svg>Refresh</button></div><div class="stats"><article><span>Users</span><strong id="statUsers">0</strong></article><article><span>Total wallet balance</span><strong id="statBalance">$0.00</strong></article><article><span>Transactions</span><strong id="statTx">0</strong></article><article><span>Active users</span><strong id="statActive">0</strong></article></div><div class="grid-two"><div class="panel"><div class="panel-head"><h2>Recent transactions</h2><button data-view="transactions">View all</button></div><div id="recentTx"></div></div><div class="panel"><div class="panel-head"><h2>Recent admin actions</h2><button data-view="audit">View all</button></div><div id="recentAudit"></div></div></div></section>
+<section id="users" class="view"><div class="heading"><div><h1>Users</h1><p>Search and manage Asal Pay accounts.</p></div></div><div class="toolbar"><div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="userSearch" placeholder="Search name, phone, email, wallet ID"></div><button class="secondary" id="userRefresh">Refresh</button></div><div class="panel table-wrap"><table><thead><tr><th>User</th><th>Phone</th><th>Wallet</th><th>Balance</th><th>Status</th><th>Actions</th></tr></thead><tbody id="usersTable"></tbody></table></div></section>
+<section id="transactions" class="view"><div class="heading"><div><h1>Transactions</h1><p>Every wallet movement and administrative adjustment.</p></div></div><div class="toolbar"><div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="txSearch" placeholder="Search transaction, phone, note"></div><button class="secondary" id="txRefresh">Refresh</button></div><div class="panel table-wrap"><table><thead><tr><th>Date</th><th>Type</th><th>From</th><th>To</th><th>Amount</th><th>Status</th><th>ID</th></tr></thead><tbody id="txTable"></tbody></table></div></section>
+<section id="audit" class="view"><div class="heading"><div><h1>Admin audit log</h1><p>Every privileged wallet and account action is recorded.</p></div></div><div class="panel table-wrap"><table><thead><tr><th>Date</th><th>Action</th><th>User</th><th>Amount</th><th>Reason</th></tr></thead><tbody id="auditTable"></tbody></table></div></section>
+</main>
+<nav class="nav"><button class="nav-item active" data-view="dashboard"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><span>Dashboard</span></button><button class="nav-item" data-view="users"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3.5 20c.5-4 2.4-6 5.5-6s5 2 5.5 6M16 6a3 3 0 0 1 0 5.5M16 14c2.4.4 4 2.2 4.5 6"/></svg><span>Users</span></button><button class="nav-item" data-view="transactions"><svg viewBox="0 0 24 24"><path d="M7 3v14M4 14l3 3 3-3M17 21V7m-3 3 3-3 3 3"/></svg><span>Transactions</span></button><button class="nav-item" data-view="audit"><svg viewBox="0 0 24 24"><path d="M5 3h14v18H5zM8 7h8M8 11h8M8 15h5"/></svg><span>Audit</span></button></nav>
+</section>
+<div id="userModal" class="modal hidden"><div class="modal-card"><button id="closeModal" class="close" aria-label="Close">×</button><div id="modalBody"></div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="admin.js"></script>
+</body></html>
