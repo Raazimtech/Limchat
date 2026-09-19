@@ -13,13 +13,21 @@
   <div class="login-card">
     <div class="mark">A</div>
     <h1>Asal Pay Admin</h1>
-    <p>Secure control center for wallet operations.</p>
+    <p id="loginDescription">Secure control center for wallet operations.</p>
     <form id="loginForm">
       <label>Email<input id="email" type="email" autocomplete="username" required placeholder="admin email"></label>
       <label>Password<input id="password" type="password" autocomplete="current-password" required placeholder="Password"></label>
       <button class="primary" type="submit">Sign in</button>
     </form>
-    <small>Admin access is restricted to authorized Asal Pay administrators.</small>
+    <button id="showBootstrap" class="secondary" style="width:100%;margin-top:10px;justify-content:center">Create first administrator</button>
+    <form id="bootstrapForm" class="hidden">
+      <label>Full name<input id="bootName" required placeholder="Administrator name"></label>
+      <label>Phone<input id="bootPhone" type="tel" required placeholder="+252..."></label>
+      <label>Email<input id="bootEmail" type="email" required placeholder="admin email"></label>
+      <label>Password<input id="bootPassword" type="password" minlength="8" required placeholder="At least 8 characters"></label>
+      <button class="primary" type="submit">Create administrator</button>
+    </form>
+    <small id="loginNote">Admin access is restricted to the single authorized administrator.</small>
   </div>
 </section>
 <section id="admin" class="hidden">
