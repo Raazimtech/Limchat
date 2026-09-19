@@ -15,7 +15,44 @@ async function boot(){await refreshBootstrap();const {data}=await db.auth.getSes
 async function checkAdmin(u){const {data:p,error}=await db.from('profiles').select('id,full_name,role,active').eq('id',u.id).single();if(error||!p||p.role!=='admin'||!p.active){await db.auth.signOut();toast('This account is not authorized as an Asal Pay administrator.');return}admin=p;$('#adminName').textContent=p.full_name||u.email||'Administrator';showAdmin();await loadDashboard()}
 $('#showBootstrap').onclick=()=>{ $('#bootstrapForm').classList.remove('hidden'); $('#showBootstrap').classList.add('hidden'); $('#loginForm').classList.add('hidden'); $('#loginDescription').textContent='Create the one and only Asal Pay administrator account.' };
 $('#loginForm').onsubmit=async e=>{e.preventDefault();const {error}=await db.auth.signInWithPassword({email:$('#email').value.trim(),password:$('#password').value});if(error)toast(error.message)};
-$('#bootstrapForm').onsubmit=async e=>{e.preventDefault();const name=$('#bootName').value.trim(),phone=$('#bootPhone').value.trim(),email=$('#bootEmail').value.trim(),password=$('#bootPassword').value,normalizedPhone=phone.replace(/\s/g,'');if(!/^\+2526[3-9]\d{7}$/.test(normalizedPhone)){toast('Enter a valid Somaliland mobile number, for example +25263xxxxxxx.');return}const {data,error}=await db.auth.signUp({email,password});if(error){toast(error.message);return}if(!data.user){toast('Could not create administrator.');return}const {error:be}=await db.rpc('asal_bootstrap_admin',{p_user_id:data.user.id,p_full_name:name,p_phone:normalizedPhone});if(be){await db.auth.signOut();toast(be.message);await refreshBootstrap();return}toast('Administrator created.');await checkAdmin(data.user)};
+$('#bootstrapForm').onsubmit=async e=>{
+  e.preventDefault();
+  const name=$('#bootName').value.trim(),
+        phone=$('#bootPhone').value.trim(),
+        email=$('#bootEmail').value.trim(),
+        password=$('#bootPassword').value,
+        code=$('#bootCode').value.trim(),
+        normalizedPhone=phone.replace(/\s/g,'');
+  if(!/^\+2526[3-9]\d{7}$/.test(normalizedPhone)){
+    toast('Enter a valid Somaliland mobile number, for example +25263xxxxxxx.');
+    return
+  }
+  if(code.length<20){
+    toast('Enter the one-time bootstrap code.');
+    return
+  }
+  const {data,error}=await fetch(SUPABASE_URL+'/functions/v1/asal-bootstrap-admin',{
+    method:'POST',
+    headers:{'Content-Type':'application/json',apikey:SUPABASE_KEY},
+    body:JSON.stringify({full_name:name,phone:normalizedPhone,email,password,code})
+  }).then(async r=>({data:await r.json(),error:r.ok?null:{message:(await Promise.resolve(r.clone()).catch(()=>null))}})).catch(error=>({data:null,error}));
+  if(error){
+    toast(error.message||'Could not create administrator.');
+    return
+  }
+  if(!data?.ok){
+    toast(data?.error||'Could not create administrator.');
+    return
+  }
+  toast('Administrator created. Sign in with your email and password.');
+  $('#bootstrapForm').classList.add('hidden');
+  $('#loginForm').classList.remove('hidden');
+  $('#showBootstrap').classList.add('hidden');
+  $('#loginDescription').textContent='Administrator created. Sign in to continue.';
+  $('#email').value=email;
+  $('#password').value='';
+  await refreshBootstrap();
+};
 $('#logout').onclick=()=>db.auth.signOut();
 $$('.nav-item').forEach(b=>b.onclick=()=>setView(b.dataset.view));
 $$('[data-view]').filter(x=>!x.classList.contains('nav-item')).forEach(b=>b.onclick=()=>setView(b.dataset.view));
