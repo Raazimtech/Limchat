@@ -31,16 +31,19 @@ $('#bootstrapForm').onsubmit=async e=>{
     toast('Enter the one-time bootstrap code.');
     return
   }
-  const {data,error}=await fetch(SUPABASE_URL+'/functions/v1/asal-bootstrap-admin',{
-    method:'POST',
-    headers:{'Content-Type':'application/json',apikey:SUPABASE_KEY},
-    body:JSON.stringify({full_name:name,phone:normalizedPhone,email,password,code})
-  }).then(async r=>({data:await r.json(),error:r.ok?null:{message:(await Promise.resolve(r.clone()).catch(()=>null))}})).catch(error=>({data:null,error}));
-  if(error){
-    toast(error.message||'Could not create administrator.');
+  let response,data;
+  try{
+    response=await fetch(SUPABASE_URL+'/functions/v1/asal-bootstrap-admin',{
+      method:'POST',
+      headers:{'Content-Type':'application/json',apikey:SUPABASE_KEY},
+      body:JSON.stringify({full_name:name,phone:normalizedPhone,email,password,code})
+    });
+    data=await response.json();
+  }catch(error){
+    toast(error?.message||'Could not reach the administrator setup service.');
     return
   }
-  if(!data?.ok){
+  if(!response.ok||!data?.ok){
     toast(data?.error||'Could not create administrator.');
     return
   }
